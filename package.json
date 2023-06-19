@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon src/app.ts",
     "start": "node dist/src/app.js",
-    "build": "yarn && rimraf ./dist && tsc -p"
+    "build": "yarn && rimraf ./dist && tsc -p ."
   },
   "keywords": [],
   "author": "",
