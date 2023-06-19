@@ -1,6 +1,8 @@
 import { Router } from "express";
+
 import LeadCtrl from "../controller/lead.ctrl";
 import container from "../ioc";
+
 const router: Router = Router();
 
 /**
