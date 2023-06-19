@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { readdirSync } from "fs";
-const router: Router = Router();
+import { join } from 'path';
 
-const PATH_ROUTES = __dirname;
+const router: Router = Router();
 
 function removeExtension(fileName: string): string {
   const cleanFileName = <string>fileName.split(".").shift();
@@ -23,6 +23,6 @@ function loadRouter(file: string): void {
   }
 }
 
-readdirSync(PATH_ROUTES).filter((file) => loadRouter(file));
+readdirSync(join(process.cwd())).filter((file) => loadRouter(file));
 
 export default router;
