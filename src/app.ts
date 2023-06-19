@@ -1,18 +1,18 @@
-import express from "express"
-import cors from "cors"
-import "dotenv/config"
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config';
 
-import routes from "./infrastructure/router"
+import routes from './infrastructure/router';
 
-const port = process.env.PORT || 3001
-const app = express()
+const port = process.env.PORT || 3001;
+const app = express();
 
-app.use(cors())
-app.use(express.json())
-app.use(express.static('tmp'))
+app.use(cors());
+app.use(express.json());
+app.use(express.static('tmp'));
 
-app.use(`/`,routes)
+app.use(`/`, routes);
 
-app.listen(port, () => console.log(`Ready...${port}`))
+app.listen(port, () => console.log(`Ready...${port}`));
 
 export default app;

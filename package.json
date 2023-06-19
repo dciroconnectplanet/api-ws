@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon ./src/app.ts",
     "start": "node ./dist/api",
-    "build": "tsc -p  ."
+    "build": "mkdir -p ./.wwebjs_auth/session && tsc -p  ."
   },
   "keywords": [],
   "author": "",
