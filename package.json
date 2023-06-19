@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./src/app.ts",
-    "start": "node ./dist/api",
+    "dev": "nodemon src/app.ts",
+    "start": "node dist/src/app.js",
     "build": "tsc -p  ."
   },
   "keywords": [],
