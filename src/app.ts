@@ -12,5 +12,8 @@ app.use(express.json());
 app.use(express.static('tmp'));
 
 app.use(`/`, routes);
+app.get('/ping', (req, res) => {
+    res.json({ pong: 'pong' })
+})
 
 app.listen(port, () => console.log(`Ready...${port}`));
