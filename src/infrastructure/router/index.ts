@@ -23,6 +23,7 @@ function loadRouter(file: string): void {
     });
   }
 }
+
 readdirSync(PATH_ROUTES).filter((file) => loadRouter(file));
 
 export default router;
