@@ -1,19 +1,4 @@
-import express from 'express';
-import cors from 'cors';
-import 'dotenv/config';
+import { SERVER_PORT } from './config';
+import { server } from './server';
 
-import routes from './infrastructure/router';
-
-const port = process.env.PORT || 3001;
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-app.use(express.static('tmp'));
-
-app.use(`/`, routes);
-app.get('/ping', (req, res) => {
-    res.json({ pong: 'pong' })
-})
-
-app.listen(port, () => console.log(`Ready...${port}`));
+server.listen(SERVER_PORT, () => console.log(`Ready...${SERVER_PORT}`));

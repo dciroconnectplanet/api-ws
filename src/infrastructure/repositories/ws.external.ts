@@ -4,6 +4,7 @@ import { image as imageQr } from 'qr-image';
 import { Client, LocalAuth } from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
+import { updateQrImage } from '../../sockets';
 
 /**
  * Extendemos los super poderes de whatsapp-web
@@ -66,6 +67,9 @@ class WsTransporter extends Client implements LeadExternal {
     qr_svg.pipe(require('fs').createWriteStream(`${path}/qr.svg`));
     console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡'`);
     console.log(`⚡ Actualiza F5 el navegador para mantener el mejor QR⚡`);
+
+    // emitir al front que se genero un nuevo QR
+    updateQrImage();
   };
 }
 
