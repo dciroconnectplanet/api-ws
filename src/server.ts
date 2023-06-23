@@ -11,7 +11,7 @@ const app = express();
 const server = createServer(app);
 const io = new SocketServer(server, {
   cors: {
-    origin: CLIENT_URL,
+    // origin: CLIENT_URL,
   },
 });
 
