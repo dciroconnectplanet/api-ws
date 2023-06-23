@@ -4,7 +4,7 @@ import { image as imageQr } from 'qr-image';
 import { Client, LocalAuth } from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
-import { loginSuccess, updateQrImage } from '../../sockets';
+import { updateQrImage } from '../../sockets';
 
 /**
  * Extendemos los super poderes de whatsapp-web
@@ -23,18 +23,25 @@ class WsTransporter extends Client implements LeadExternal {
 
     console.log('Iniciando....');
 
-    this.initialize().catch(_ => _);
+    this.logout
+
+    this.initialize().catch((_) => _);
 
     this.on('ready', () => {
       this.status = true;
       console.log('LOGIN_SUCCESS');
 
-      loginSuccess(true)
+      // no dejamos
+      updateQrImage({ loginSuccess: true });
+      this.getUnreadMsg(this);
     });
 
     this.on('auth_failure', () => {
       this.status = false;
       console.log('LOGIN_FAIL');
+
+      // emitir al front que se genero un nuevo QR
+      updateQrImage({ loginSuccess: false });
     });
 
     this.on('qr', (qr) => {
@@ -71,8 +78,28 @@ class WsTransporter extends Client implements LeadExternal {
     console.log(`⚡ Actualiza F5 el navegador para mantener el mejor QR⚡`);
 
     // emitir al front que se genero un nuevo QR
-    updateQrImage();
+    updateQrImage({ loginSuccess: false });
   };
+
+  async getUnreadMsg(client: WsTransporter) {
+    try {
+      const allChats = await client.getChats();
+
+      console.log(allChats);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async logoutSession(client: WsTransporter) {
+    try {
+      await client.logout();
+
+      console.log('Se cierra la sessión');
+    } catch (e) {
+      console.error(e);
+    }
+  }
 }
 
 export default WsTransporter;

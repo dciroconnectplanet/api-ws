@@ -1,10 +1,9 @@
 import { io } from '../server';
-import { convertQrImgToBase64 } from '../utils';
 
-export const updateQrImage = () => {
-  io.emit('message', { image: convertQrImgToBase64() })
+export const updateQrImage = ({ loginSuccess }: IGenerateQr) => {
+  io.emit('qr', { loginSuccess });
 };
 
-export const loginSuccess = (loginSuccess: boolean) =>  {
-  io.emit('login', { loginSuccess })
+interface IGenerateQr {
+  loginSuccess: boolean;
 }
