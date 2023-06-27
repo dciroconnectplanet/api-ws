@@ -1,9 +1,10 @@
 import { io } from '../server';
 
-export const updateQrImage = ({ loginSuccess }: IGenerateQr) => {
-  io.emit('qr', { loginSuccess });
+export const updateQrImage = (qrInfo: IGenerateQr) => {
+  io.emit('qr', qrInfo);
 };
 
 interface IGenerateQr {
   loginSuccess: boolean;
+  qrImage: string
 }

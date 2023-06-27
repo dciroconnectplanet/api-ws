@@ -1,6 +1,3 @@
-import { join } from 'path';
-
-import { image as imageQr } from 'qr-image';
 import { Client, LocalAuth } from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
@@ -23,8 +20,6 @@ class WsTransporter extends Client implements LeadExternal {
 
     console.log('Iniciando....');
 
-    this.logout
-
     this.initialize().catch((_) => _);
 
     this.on('ready', () => {
@@ -32,7 +27,7 @@ class WsTransporter extends Client implements LeadExternal {
       console.log('LOGIN_SUCCESS');
 
       // no dejamos
-      updateQrImage({ loginSuccess: true });
+      updateQrImage({ loginSuccess: true, qrImage: '' });
       this.getUnreadMsg(this);
     });
 
@@ -41,7 +36,7 @@ class WsTransporter extends Client implements LeadExternal {
       console.log('LOGIN_FAIL');
 
       // emitir al front que se genero un nuevo QR
-      updateQrImage({ loginSuccess: false });
+      this.generateQrCode(this);
     });
 
     this.on('qr', (qr) => {
@@ -71,14 +66,11 @@ class WsTransporter extends Client implements LeadExternal {
   }
 
   private generateImage = (base64: string) => {
-    const path = join(process.cwd(), 'tmp');
-    let qr_svg = imageQr(base64, { type: 'svg', margin: 4 });
-    qr_svg.pipe(require('fs').createWriteStream(`${path}/qr.svg`));
     console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡'`);
     console.log(`⚡ Actualiza F5 el navegador para mantener el mejor QR⚡`);
 
     // emitir al front que se genero un nuevo QR
-    updateQrImage({ loginSuccess: false });
+    updateQrImage({ loginSuccess: false, qrImage: base64 });
   };
 
   async getUnreadMsg(client: WsTransporter) {
@@ -99,6 +91,13 @@ class WsTransporter extends Client implements LeadExternal {
     } catch (e) {
       console.error(e);
     }
+  }
+
+  private generateQrCode(client: WsTransporter) {
+    client.on('qr', (qr) => {
+      console.log('Escanea el código QR que está en la carpeta tmp.');
+      this.generateImage(qr);
+    });
   }
 }
 
