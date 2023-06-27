@@ -28,7 +28,6 @@ class WsTransporter extends Client implements LeadExternal {
 
       // no dejamos
       updateQrImage({ loginSuccess: true, qrImage: '' });
-      this.getUnreadMsg(this);
     });
 
     this.on('auth_failure', () => {
@@ -72,16 +71,6 @@ class WsTransporter extends Client implements LeadExternal {
     // emitir al front que se genero un nuevo QR
     updateQrImage({ loginSuccess: false, qrImage: base64 });
   };
-
-  async getUnreadMsg(client: WsTransporter) {
-    try {
-      const allChats = await client.getChats();
-
-      console.log(allChats);
-    } catch (e) {
-      console.error(e);
-    }
-  }
 
   async logoutSession(client: WsTransporter) {
     try {
