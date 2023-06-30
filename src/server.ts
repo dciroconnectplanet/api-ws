@@ -27,10 +27,6 @@ app.get('/ping', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log({ socketId: socket.id });
-  socket.on('message', (body) => {
-    console.log({ body });
-    socket.emit('')
-  });
 });
 
 export { server, io };
