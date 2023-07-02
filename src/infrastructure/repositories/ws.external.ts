@@ -13,7 +13,7 @@ class WsTransporter extends Client implements LeadExternal {
     super({
       authStrategy: new LocalAuth(),
       puppeteer: {
-        headless: true,
+        headless: false,
         args: [
           '--log-level=3', // fatal only
           '--start-maximized',
