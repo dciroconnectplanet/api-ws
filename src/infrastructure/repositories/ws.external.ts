@@ -38,7 +38,7 @@ class WsTransporter extends Client implements LeadExternal {
     console.log('Iniciando....');
     this.initialize()
       .then()
-      .catch((_) => _);
+      .catch(console.log)
 
     this.on('ready', () => {
       this.status = true;
