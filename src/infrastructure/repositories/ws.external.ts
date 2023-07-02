@@ -37,7 +37,8 @@ class WsTransporter extends Client implements LeadExternal {
 
     console.log('Iniciando....');
     this.initialize()
-    .then();
+      .then()
+      .catch((_) => _);
 
     this.on('ready', () => {
       this.status = true;
@@ -61,7 +62,7 @@ class WsTransporter extends Client implements LeadExternal {
 
     process.on('unhandledRejection', (error) => {
       console.error('Unhandled Promise Rejection:', error);
-  });
+    });
   }
 
   /**
