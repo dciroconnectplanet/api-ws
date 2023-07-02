@@ -36,6 +36,8 @@ class WsTransporter extends Client implements LeadExternal {
     });
 
     console.log('Iniciando....');
+    this.initialize()
+    .then();
 
     this.on('ready', () => {
       this.status = true;
@@ -57,7 +59,9 @@ class WsTransporter extends Client implements LeadExternal {
       this.generateImage(qr);
     });
 
-    this.initialize().catch((_) => _);
+    process.on('unhandledRejection', (error) => {
+      console.error('Unhandled Promise Rejection:', error);
+  });
   }
 
   /**
@@ -86,16 +90,6 @@ class WsTransporter extends Client implements LeadExternal {
     // emitir al front que se genero un nuevo QR
     updateQrImage({ loginSuccess: false, qrImage: base64 });
   };
-
-  async logoutSession(client: WsTransporter) {
-    try {
-      await client.logout();
-
-      console.log('Se cierra la sessión');
-    } catch (e) {
-      console.error(e);
-    }
-  }
 
   private generateQrCode(client: WsTransporter) {
     client.on('qr', (qr) => {
