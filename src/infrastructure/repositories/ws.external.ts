@@ -1,4 +1,4 @@
-import { Client, LocalAuth } from 'whatsapp-web.js';
+import { Client, type Contact, LocalAuth } from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
 import { updateQrImage } from '../../sockets';
@@ -100,9 +100,10 @@ class WsTransporter extends Client implements LeadExternal {
 
   private async getAllNumbersPhone(client: WsTransporter) {
     try {
-      const contacts = await client.getContacts();
+      const contacts: Contact[] = await client.getContacts();
+      const numbers = contacts.map(({ number, name }) => ({ number, name }))
 
-      console.log({ contacts });
+      console.log({ numbers });
     } catch (error) {
       console.error(error);
     }
