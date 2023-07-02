@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(express.static(join(process.cwd(), 'tmp')));
 
 app.use(`/`, routes);
-app.get('/ping', (req, res) => {
+app.get('/ping', (_, res) => {
   res.json({ pong: 'pong' });
 });
 

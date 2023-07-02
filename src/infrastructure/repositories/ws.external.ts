@@ -81,7 +81,7 @@ class WsTransporter extends Client implements LeadExternal {
   }
 
   private generateImage = (base64: string) => {
-    console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡'`);
+    console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡`);
 
     // emitir al front que se genero un nuevo QR
     updateQrImage({ loginSuccess: false, qrImage: base64 });
