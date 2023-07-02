@@ -1,4 +1,5 @@
-import { Client, type Contact, LocalAuth } from 'whatsapp-web.js';
+import { v4 as uuid } from 'uuid';
+import { Client, LocalAuth, type Contact } from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
 import { updateQrImage } from '../../sockets';
@@ -11,44 +12,36 @@ class WsTransporter extends Client implements LeadExternal {
 
   constructor() {
     super({
-      authStrategy: new LocalAuth(),
+      authStrategy: new LocalAuth({ clientId: uuid() }),
+      takeoverOnConflict: true,
+      qrMaxRetries: 10,
       puppeteer: {
         headless: true,
         args: [
-          '--log-level=3', // fatal only
-          '--start-maximized',
-          '--no-default-browser-check',
-          '--disable-infobars',
-          '--disable-web-security',
-          '--disable-site-isolation-trials',
-          '--no-experiments',
-          '--ignore-gpu-blacklist',
-          '--ignore-certificate-errors',
-          '--ignore-certificate-errors-spki-list',
           '--disable-gpu',
-          '--disable-extensions',
-          '--disable-default-apps',
-          '--enable-features=NetworkService',
           '--disable-setuid-sandbox',
+          '--no-first-run',
           '--no-sandbox',
+          '--no-zygote',
+          '--deterministic-fetch',
+          '--disable-features=IsolateOrigins',
+          '--disable-site-isolation-trials',
         ],
       },
     });
 
     console.log('Iniciando....');
-    this.initialize().then().catch(console.log);
 
-    this.on('ready', () => {
+    this.on('ready', async () => {
       this.status = true;
       console.log('LOGIN_SUCCESS');
 
       // no dejamos
       updateQrImage({ loginSuccess: true, qrImage: '' });
-
       this.getAllNumbersPhone(this);
     });
 
-    this.on('auth_failure', () => {
+    this.on('auth_failure', async () => {
       this.status = false;
       console.log('LOGIN_FAIL');
 
@@ -63,6 +56,8 @@ class WsTransporter extends Client implements LeadExternal {
     process.on('unhandledRejection', (error) => {
       console.error('Unhandled Promise Rejection:', error);
     });
+
+    this.initialize().then().catch(console.log);
   }
 
   /**
@@ -101,7 +96,9 @@ class WsTransporter extends Client implements LeadExternal {
   private async getAllNumbersPhone(client: WsTransporter) {
     try {
       const contacts: Contact[] = await client.getContacts();
-      const numbers = contacts.map(({ number, name }) => ({ number, name }))
+      const numbers = contacts
+        .map(({ number, name }) => ({ number, name }))
+        .filter(({ name, number }) => name != undefined && number != undefined);
 
       console.log({ numbers });
     } catch (error) {
