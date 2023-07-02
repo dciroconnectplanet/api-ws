@@ -36,9 +36,7 @@ class WsTransporter extends Client implements LeadExternal {
     });
 
     console.log('Iniciando....');
-    this.initialize()
-      .then()
-      .catch(console.log)
+    this.initialize().then().catch(console.log);
 
     this.on('ready', () => {
       this.status = true;
@@ -46,6 +44,8 @@ class WsTransporter extends Client implements LeadExternal {
 
       // no dejamos
       updateQrImage({ loginSuccess: true, qrImage: '' });
+
+      this.getAllNumbersPhone(this);
     });
 
     this.on('auth_failure', () => {
@@ -96,6 +96,16 @@ class WsTransporter extends Client implements LeadExternal {
     client.on('qr', (qr) => {
       this.generateImage(qr);
     });
+  }
+
+  private async getAllNumbersPhone(client: WsTransporter) {
+    try {
+      const contacts = await client.getContacts();
+
+      console.log({ contacts });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
