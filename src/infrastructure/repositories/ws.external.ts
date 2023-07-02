@@ -15,15 +15,22 @@ class WsTransporter extends Client implements LeadExternal {
       puppeteer: {
         headless: true,
         args: [
-          '--disable-gpu',
-          '--disable-dev-shm-usage',
-          '--disable-setuid-sandbox',
-          '--no-first-run',
-          '--no-sandbox',
-          '--no-zygote',
-          '--deterministic-fetch',
-          '--disable-features=IsolateOrigins',
+          '--log-level=3', // fatal only
+          '--start-maximized',
+          '--no-default-browser-check',
+          '--disable-infobars',
+          '--disable-web-security',
           '--disable-site-isolation-trials',
+          '--no-experiments',
+          '--ignore-gpu-blacklist',
+          '--ignore-certificate-errors',
+          '--ignore-certificate-errors-spki-list',
+          '--disable-gpu',
+          '--disable-extensions',
+          '--disable-default-apps',
+          '--enable-features=NetworkService',
+          '--disable-setuid-sandbox',
+          '--no-sandbox',
         ],
       },
     });
@@ -47,7 +54,6 @@ class WsTransporter extends Client implements LeadExternal {
     });
 
     this.on('qr', (qr) => {
-      console.log('Escanea el código QR que está en la carpeta tmp.');
       this.generateImage(qr);
     });
 
@@ -76,7 +82,6 @@ class WsTransporter extends Client implements LeadExternal {
 
   private generateImage = (base64: string) => {
     console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡'`);
-    console.log(`⚡ Actualiza F5 el navegador para mantener el mejor QR⚡`);
 
     // emitir al front que se genero un nuevo QR
     updateQrImage({ loginSuccess: false, qrImage: base64 });
@@ -94,7 +99,6 @@ class WsTransporter extends Client implements LeadExternal {
 
   private generateQrCode(client: WsTransporter) {
     client.on('qr', (qr) => {
-      console.log('Escanea el código QR que está en la carpeta tmp.');
       this.generateImage(qr);
     });
   }
