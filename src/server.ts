@@ -1,3 +1,4 @@
+import { existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { cwd } from 'process';
 
@@ -14,6 +15,12 @@ app.use(express.json());
 app.use(express.static(join(cwd(), 'tmp')));
 console.log({ static: cwd() });
 console.log({ mainFile: require.main?.filename });
+
+var dir = './tmp';
+
+if (!existsSync(dir)) {
+  mkdirSync(dir);
+}
 
 app.use(`/`, routes);
 app.get('/ping', (_, res) => {
