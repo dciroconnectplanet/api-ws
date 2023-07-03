@@ -3,7 +3,7 @@ import { join } from 'path';
 
 import { image as imageQr } from 'qr-image';
 import { v4 as uuid } from 'uuid';
-import { Client, LocalAuth, type Contact } from 'whatsapp-web.js';
+import { Chat, Client, LocalAuth, type Contact } from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
 
@@ -34,8 +34,9 @@ class WsTransporter extends Client implements LeadExternal {
     this.on('ready', async () => {
       this.status = true;
       console.log('LOGIN_SUCCESS');
+      this.info;
 
-      this.getAllNumbersPhone(this);
+      this.getAllChats(this);
     });
 
     this.on('auth_failure', async () => {
@@ -46,14 +47,14 @@ class WsTransporter extends Client implements LeadExternal {
     });
 
     this.on('qr', (qr) => {
-      console.log('Escanea el codigo QR que esta en la carepta tmp');
+      console.log('Escanea el codigo QR que esta en la carpeta tmp');
       this.generateImage(qr);
     });
 
-    this.on('disconnected', (reason) => {
+    this.on('disconnected', async (reason) => {
       console.log('Client disconected: ', reason);
       // Destroy and reinitialize the client when disconnected
-      this.destroy();
+      await this.destroy();
       this.initializeClient(this);
     });
 
@@ -95,14 +96,14 @@ class WsTransporter extends Client implements LeadExternal {
     client.initialize().then().catch(console.error);
   }
 
-  private async getAllNumbersPhone(client: WsTransporter) {
+  private async getAllChats(client: WsTransporter) {
     try {
-      const contacts: Contact[] = await client.getContacts();
-      const numbers = contacts
-        .map(({ number, name }) => ({ number, name }))
-        .filter(({ name, number }) => name != undefined && number != undefined);
+      const chats: Chat[] = await client.getChats();
 
-      console.log({ numbers });
+      for (const chat of chats) {
+        const contact = await chat.getContact();
+        console.log({ phone: contact.number });
+      }
     } catch (error) {
       console.error(error);
     }
