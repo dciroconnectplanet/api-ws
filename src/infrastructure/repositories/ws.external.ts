@@ -57,6 +57,10 @@ class WsTransporter extends Client implements LeadExternal {
       this.initializeClient(this);
     });
 
+    process.on('unhandledRejection', (error) => {
+      console.error('Unhandled Promise Rejection:', error);
+    });
+
     this.initializeClient(this);
   }
 
