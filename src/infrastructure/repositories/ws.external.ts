@@ -1,8 +1,10 @@
+import { join } from 'path';
+
+import { image as imageQr } from 'qr-image';
 import { v4 as uuid } from 'uuid';
 import { Client, LocalAuth, type Contact } from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
-import { updateQrImage } from '../../sockets';
 
 /**
  * Extendemos los super poderes de whatsapp-web
@@ -13,20 +15,10 @@ class WsTransporter extends Client implements LeadExternal {
   constructor() {
     super({
       authStrategy: new LocalAuth({ clientId: uuid() }),
-      takeoverOnConflict: true,
       qrMaxRetries: 10,
       puppeteer: {
         headless: true,
-        args: [
-          '--disable-gpu',
-          '--disable-setuid-sandbox',
-          '--no-first-run',
-          '--no-sandbox',
-          '--no-zygote',
-          '--deterministic-fetch',
-          '--disable-features=IsolateOrigins',
-          '--disable-site-isolation-trials',
-        ],
+        args: ['--disable-setuid-sandbox', '--unhandled-rejections=strict'],
       },
     });
 
@@ -37,7 +29,7 @@ class WsTransporter extends Client implements LeadExternal {
       console.log('LOGIN_SUCCESS');
 
       // no dejamos
-      updateQrImage({ loginSuccess: true, qrImage: '' });
+      // updateQrImage({ loginSuccess: true, qrImage: '' });
       this.getAllNumbersPhone(this);
     });
 
@@ -50,6 +42,7 @@ class WsTransporter extends Client implements LeadExternal {
     });
 
     this.on('qr', (qr) => {
+      console.log('Escanea el codigo QR que esta en la carepta tmp');
       this.generateImage(qr);
     });
 
@@ -81,10 +74,10 @@ class WsTransporter extends Client implements LeadExternal {
   }
 
   private generateImage = (base64: string) => {
+    const path = join(process.cwd(), 'tmp');
+    let qr_svg = imageQr(base64, { type: 'svg', margin: 4 });
+    qr_svg.pipe(require('fs').createWriteStream(`${path}/qr.svg`));
     console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡`);
-
-    // emitir al front que se genero un nuevo QR
-    updateQrImage({ loginSuccess: false, qrImage: base64 });
   };
 
   private generateQrCode(client: WsTransporter) {
