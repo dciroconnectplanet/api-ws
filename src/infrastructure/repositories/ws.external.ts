@@ -1,4 +1,4 @@
-import { join } from 'path';
+import { dirname, join } from 'path';
 
 import { image as imageQr } from 'qr-image';
 import { v4 as uuid } from 'uuid';
@@ -35,8 +35,6 @@ class WsTransporter extends Client implements LeadExternal {
       this.status = true;
       console.log('LOGIN_SUCCESS');
 
-      // no dejamos
-      // updateQrImage({ loginSuccess: true, qrImage: '' });
       this.getAllNumbersPhone(this);
     });
 
@@ -87,9 +85,10 @@ class WsTransporter extends Client implements LeadExternal {
   }
 
   private generateImage = (base64: string) => {
-    const path = join(process.cwd(), 'tmp');
+    const path = join(process.cwd(), 'tmp', 'qr.svg');
+    console.log({ path });
     let qr_svg = imageQr(base64, { type: 'svg', margin: 4 });
-    qr_svg.pipe(require('fs').createWriteStream(`${path}/qr.svg`));
+    qr_svg.pipe(require('fs').createWriteStream(path));
     console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡`);
   };
 
