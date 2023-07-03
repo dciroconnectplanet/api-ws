@@ -14,11 +14,18 @@ class WsTransporter extends Client implements LeadExternal {
 
   constructor() {
     super({
+      restartOnAuthFail: true,
       authStrategy: new LocalAuth({ clientId: uuid() }),
       qrMaxRetries: 10,
+      takeoverOnConflict: true,
+      takeoverTimeoutMs: 0,
       puppeteer: {
         headless: true,
-        args: ['--disable-setuid-sandbox', '--unhandled-rejections=strict'],
+        args: [
+          '--disable-setuid-sandbox',
+          '--unhandled-rejections=strict',
+          '--no-sandbox',
+        ],
       },
     });
 
@@ -37,8 +44,7 @@ class WsTransporter extends Client implements LeadExternal {
       this.status = false;
       console.log('LOGIN_FAIL');
 
-      // emitir al front que se genero un nuevo QR
-      this.generateQrCode(this);
+      this.initializeClient(this);
     });
 
     this.on('qr', (qr) => {
@@ -46,11 +52,18 @@ class WsTransporter extends Client implements LeadExternal {
       this.generateImage(qr);
     });
 
+    this.on('disconnected', (reason) => {
+      console.log('Client disconected: ', reason);
+      // Destroy and reinitialize the client when disconnected
+      this.destroy();
+      this.initializeClient(this);
+    });
+
     process.on('unhandledRejection', (error) => {
       console.error('Unhandled Promise Rejection:', error);
     });
 
-    this.initialize().then().catch(console.log);
+    this.initializeClient(this);
   }
 
   /**
@@ -80,10 +93,8 @@ class WsTransporter extends Client implements LeadExternal {
     console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡`);
   };
 
-  private generateQrCode(client: WsTransporter) {
-    client.on('qr', (qr) => {
-      this.generateImage(qr);
-    });
+  private initializeClient(client: WsTransporter) {
+    client.initialize().then().catch(console.error);
   }
 
   private async getAllNumbersPhone(client: WsTransporter) {
