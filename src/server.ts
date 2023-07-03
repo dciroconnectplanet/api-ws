@@ -12,7 +12,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(join(cwd(), 'tmp')));
-console.log({'static': cwd()});
+console.log({ static: cwd() });
+console.log({ mainFile: require.main?.filename });
 
 app.use(`/`, routes);
 app.get('/ping', (_, res) => {
