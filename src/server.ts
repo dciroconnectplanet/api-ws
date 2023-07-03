@@ -8,18 +8,17 @@ import express from 'express';
 import routes from './infrastructure/router';
 
 const app = express();
+const tmpPath = join(cwd(), 'tmp');
 
 // middelwares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(join(cwd(), 'tmp')));
+app.use(express.static(tmpPath));
 console.log({ static: cwd() });
-console.log({ mainFile: require.main?.filename });
 
-var dir = './tmp';
-
-if (!existsSync(dir)) {
-  mkdirSync(dir);
+console.log({ existTmp: existsSync(tmpPath) });
+if (!existsSync(tmpPath)) {
+  mkdirSync(tmpPath);
 }
 
 app.use(`/`, routes);
