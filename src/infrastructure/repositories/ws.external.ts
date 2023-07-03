@@ -57,10 +57,6 @@ class WsTransporter extends Client implements LeadExternal {
       this.initializeClient(this);
     });
 
-    process.on('unhandledRejection', (error) => {
-      console.error('Unhandled Promise Rejection:', error);
-    });
-
     this.initializeClient(this);
   }
 
@@ -86,7 +82,6 @@ class WsTransporter extends Client implements LeadExternal {
 
   private generateImage = (base64: string) => {
     const path = join(cwd(), 'tmp', 'qr.svg');
-    console.log({ path });
     let qr_svg = imageQr(base64, { type: 'svg', margin: 4 });
     qr_svg.pipe(require('fs').createWriteStream(path));
     console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡`);

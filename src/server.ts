@@ -14,12 +14,6 @@ const tmpPath = join(cwd(), 'tmp');
 app.use(cors());
 app.use(express.json());
 app.use(express.static(tmpPath));
-console.log({ static: cwd() });
-
-console.log({ existTmp: existsSync(tmpPath) });
-if (!existsSync(tmpPath)) {
-  mkdirSync(tmpPath);
-}
 
 app.use(`/`, routes);
 app.get('/ping', (_, res) => {
