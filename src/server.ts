@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { cwd } from 'process';
 
 import cors from 'cors';
 import express from 'express';
@@ -10,7 +11,8 @@ const app = express();
 // middelwares
 app.use(cors());
 app.use(express.json());
-app.use(express.static(join(process.cwd(), 'tmp')));
+app.use(express.static(join(cwd(), 'tmp')));
+console.log({'static': cwd()});
 
 app.use(`/`, routes);
 app.get('/ping', (_, res) => {

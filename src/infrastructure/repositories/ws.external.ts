@@ -1,4 +1,5 @@
-import { dirname, join } from 'path';
+import { cwd } from 'node:process';
+import { join } from 'path';
 
 import { image as imageQr } from 'qr-image';
 import { v4 as uuid } from 'uuid';
@@ -14,7 +15,6 @@ class WsTransporter extends Client implements LeadExternal {
 
   constructor() {
     super({
-      restartOnAuthFail: true,
       authStrategy: new LocalAuth({ clientId: uuid() }),
       qrMaxRetries: 10,
       takeoverOnConflict: true,
@@ -85,7 +85,13 @@ class WsTransporter extends Client implements LeadExternal {
   }
 
   private generateImage = (base64: string) => {
-    const path = join(process.cwd(), 'tmp', 'qr.svg');
+    let path = '';
+
+    if (process.env.NODE_ENV === 'production') {
+      path = join(cwd(), 'tmp', 'qr.svg');
+    } else {
+      path = join(cwd(), 'tmp', 'qr.svg');
+    }
     console.log({ path });
     let qr_svg = imageQr(base64, { type: 'svg', margin: 4 });
     qr_svg.pipe(require('fs').createWriteStream(path));
