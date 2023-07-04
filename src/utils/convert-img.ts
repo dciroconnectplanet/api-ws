@@ -1,7 +1,7 @@
-import { readFile } from 'fs/promises';
+import { readFileSync } from 'fs';
 import { join } from 'path';
 
-export const convertQrImgToBase64 = async () => {
+export const convertQrImgToBase64 = () => {
   const qrPath = join(process.cwd(), 'tmp', 'qr.svg');
-  return await readFile(qrPath, 'base64');
+  return readFileSync(qrPath, 'base64');
 };

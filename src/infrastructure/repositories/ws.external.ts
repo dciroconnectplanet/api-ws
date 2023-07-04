@@ -3,9 +3,11 @@ import { join } from 'path';
 
 import { image as imageQr } from 'qr-image';
 import { v4 as uuid } from 'uuid';
-import { Chat, Client, LocalAuth, type Contact } from 'whatsapp-web.js';
+import { Client, LocalAuth, type Chat } from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
+import { emitLoginQr } from '../../sockets';
+import { convertQrImgToBase64 } from '../../utils';
 
 /**
  * Extendemos los super poderes de whatsapp-web
@@ -16,7 +18,7 @@ class WsTransporter extends Client implements LeadExternal {
   constructor() {
     super({
       authStrategy: new LocalAuth({ clientId: uuid() }),
-      qrMaxRetries: 2,
+      qrMaxRetries: 20,
       takeoverOnConflict: true,
       takeoverTimeoutMs: 0,
       puppeteer: {
@@ -36,8 +38,11 @@ class WsTransporter extends Client implements LeadExternal {
     this.on('ready', async () => {
       this.status = true;
       console.log('LOGIN_SUCCESS');
-      this.info;
 
+      emitLoginQr({
+        loginSuccess: this.status,
+        qrImage: '',
+      });
       this.getAllChats(this);
     });
 
@@ -94,6 +99,13 @@ class WsTransporter extends Client implements LeadExternal {
     let qr_svg = imageQr(base64, { type: 'svg', margin: 4 });
     qr_svg.pipe(require('fs').createWriteStream(path));
     console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡`);
+
+    const response = {
+      loginSuccess: this.status,
+      qrImage: convertQrImgToBase64(),
+    };
+
+    emitLoginQr(response);
   };
 
   private initializeClient(client: WsTransporter) {

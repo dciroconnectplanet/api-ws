@@ -1,4 +1,4 @@
 import { SERVER_PORT } from './config';
-import app from './server';
+import { server } from './server';
 
-app.listen(SERVER_PORT, () => console.log(`Ready...${SERVER_PORT}`));
+server.listen(SERVER_PORT, () => console.log(`Ready...${SERVER_PORT}`));
