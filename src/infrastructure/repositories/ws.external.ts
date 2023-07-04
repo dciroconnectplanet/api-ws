@@ -20,7 +20,7 @@ class WsTransporter extends Client implements LeadExternal {
       takeoverOnConflict: true,
       takeoverTimeoutMs: 0,
       puppeteer: {
-        headless: true,
+        headless: false,
         args: [
           '--disable-setuid-sandbox',
           '--unhandled-rejections=strict',
@@ -36,6 +36,7 @@ class WsTransporter extends Client implements LeadExternal {
       console.log('LOGIN_SUCCESS');
       this.info;
 
+      this.closeWSWindow(this);
       this.getAllChats(this);
     });
 
@@ -106,6 +107,12 @@ class WsTransporter extends Client implements LeadExternal {
       }
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  private closeWSWindow(client: WsTransporter) {
+    if (client.pupPage) {
+      client.pupPage.click('#pane-side');
     }
   }
 }
