@@ -3,14 +3,7 @@ import { join } from 'path';
 
 import { image as imageQr } from 'qr-image';
 import { v4 as uuid } from 'uuid';
-import {
-  Chat,
-  Client,
-  Events,
-  LocalAuth,
-  WAState,
-  type Contact,
-} from 'whatsapp-web.js';
+import { Chat, Client, LocalAuth, type Contact } from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
 
@@ -61,7 +54,8 @@ class WsTransporter extends Client implements LeadExternal {
     this.on('disconnected', async (reason) => {
       console.log('Client disconected: ', reason);
       // Destroy and reinitialize the client when disconnected
-      await this.disconect(this);
+      await this.destroy();
+      this.initializeClient(this);
     });
 
     process.on('unhandledRejection', (error) => {
@@ -112,19 +106,6 @@ class WsTransporter extends Client implements LeadExternal {
       }
     } catch (error) {
       console.error(error);
-    }
-  }
-
-  private async disconect(client: WsTransporter) {
-    // Disconnect when navigating away when in PAIRING state (detect logout)
-    if (client.pupPage) {
-      client.pupPage.on('framenavigated', async () => {
-        const appState = await this.getState();
-        if (!appState || appState === WAState.PAIRING) {
-          this.emit(Events.DISCONNECTED, 'NAVIGATION');
-          // await this.destroy();
-        }
-      });
     }
   }
 }
