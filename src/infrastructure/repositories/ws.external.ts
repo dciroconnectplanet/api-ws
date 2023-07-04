@@ -20,13 +20,17 @@ class WsTransporter extends Client implements LeadExternal {
       takeoverOnConflict: true,
       takeoverTimeoutMs: 0,
       puppeteer: {
-        headless: false,
+        headless: true,
         args: [
           '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--unhandled-rejections=strict',
         ],
       },
     });
 
+    this.initializeClient(this);
     console.log('Iniciando....');
 
     this.on('ready', async () => {
@@ -34,7 +38,6 @@ class WsTransporter extends Client implements LeadExternal {
       console.log('LOGIN_SUCCESS');
       this.info;
 
-      this.closeWSWindow(this);
       this.getAllChats(this);
     });
 
@@ -60,8 +63,6 @@ class WsTransporter extends Client implements LeadExternal {
     process.on('unhandledRejection', (error) => {
       console.error('Unhandled Promise Rejection:', error);
     });
-
-    this.initializeClient(this);
   }
 
   /**
@@ -105,12 +106,6 @@ class WsTransporter extends Client implements LeadExternal {
       }
     } catch (error) {
       console.error(error);
-    }
-  }
-
-  private closeWSWindow(client: WsTransporter) {
-    if (client.pupPage) {
-      client.pupPage.click('#pane-side');
     }
   }
 }
