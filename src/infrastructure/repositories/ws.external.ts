@@ -56,7 +56,11 @@ class WsTransporter extends Client implements LeadExternal {
     this.on('disconnected', async (reason) => {
       console.log('Client disconected: ', reason);
       // Destroy and reinitialize the client when disconnected
-      await this.destroy();
+      try {
+        await this.destroy();
+      } catch (error) {
+        console.log('catched');
+      }
       this.initializeClient(this);
     });
 
@@ -99,11 +103,11 @@ class WsTransporter extends Client implements LeadExternal {
   private async getAllChats(client: WsTransporter) {
     try {
       const chats: Chat[] = await client.getChats();
+      const users = chats
+        .filter(({ id: { user } }) => user)
+        .map(({ id: { user }, name }) => ({ phone: user, name }));
 
-      for (const chat of chats) {
-        const contact = await chat.getContact();
-        console.log(contact);
-      }
+      console.log({ users });
     } catch (error) {
       console.error(error);
     }
