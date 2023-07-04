@@ -40,7 +40,7 @@ class WsTransporter extends Client implements LeadExternal {
       console.log('LOGIN_SUCCESS');
 
       emitLoginQr({
-        loginSuccess: this.status,
+        loginSuccess: true,
         qrImage: '',
       });
       this.getAllChats(this);
@@ -101,7 +101,7 @@ class WsTransporter extends Client implements LeadExternal {
     console.log(`⚡ Recuerda que el QR se actualiza cada minuto ⚡`);
 
     const response = {
-      loginSuccess: this.status,
+      loginSuccess: false,
       qrImage: convertQrImgToBase64(),
     };
 
