@@ -8,8 +8,8 @@
   },
   "scripts": {
     "dev": "nodemon src/app.ts",
-    "start": "npm i && tsc -p . && node dist/app.js",
-    "build": "rimraf ./dist && tsc -p ."
+    "start": "node dist/app.js",
+    "build": "npm i && rimraf ./dist && tsc -p ."
   },
   "keywords": [],
   "author": "",
