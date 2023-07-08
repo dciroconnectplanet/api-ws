@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "nodemon src/app.ts",
-    "start": "node dist/app.js",
+    "start": "npm run build && node dist/app.js",
     "build": "npm i && rimraf ./dist && tsc -p ."
   },
   "keywords": [],
