@@ -1,7 +1,8 @@
 import { Router } from 'express';
 
-import LeadCtrl from '../controller/lead.ctrl';
+import type LeadCtrl from '../controller/lead.ctrl';
 import container from '../ioc';
+import type WsTransporter from '../repositories/ws.external';
 
 const router: Router = Router();
 
@@ -11,5 +12,14 @@ const router: Router = Router();
 const leadCtrl: LeadCtrl = container.get('lead.ctrl');
 router.post('/', leadCtrl.sendCtrl);
 
-export { router };
+router.get('/', (req, res) => {
+  try {
+    const wsTrasporter: WsTransporter = container.get('ws.transporter');
+    return res.json({ isLoggin: wsTrasporter.getStatus() });
+  } catch (error) {
+    console.error(error);
+    return { isLoggin: false };
+  }
+});
 
+export { router };
