@@ -18,7 +18,6 @@ class WsTransporter extends Client implements LeadExternal {
   constructor() {
     super({
       authStrategy: new LocalAuth({ clientId: uuid() }),
-      qrMaxRetries: 20,
       takeoverOnConflict: true,
       takeoverTimeoutMs: 0,
       puppeteer: {
