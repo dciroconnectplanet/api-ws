@@ -54,7 +54,6 @@ class WsTransporter extends Client implements LeadExternal {
     });
 
     this.on('qr', (qr) => {
-      console.log('Escanea el codigo QR que esta en la carpeta tmp');
       this.generateImage(qr);
     });
 
