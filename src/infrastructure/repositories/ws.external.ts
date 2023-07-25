@@ -42,7 +42,6 @@ class WsTransporter extends Client implements LeadExternal {
         loginSuccess: true,
         qrImage: '',
       });
-      this.getAllChats(this);
     });
 
     this.on('auth_failure', async () => {
