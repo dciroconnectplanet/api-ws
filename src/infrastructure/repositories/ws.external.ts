@@ -3,10 +3,17 @@ import { join } from 'path';
 
 import { image as imageQr } from 'qr-image';
 import { v4 as uuid } from 'uuid';
-import { Client, LocalAuth, type Chat } from 'whatsapp-web.js';
+import {
+  Client,
+  LocalAuth,
+  type Message,
+  type Chat,
+  MessageMedia,
+} from 'whatsapp-web.js';
 
 import LeadExternal from '../../domain/lead-external.repository';
 import { emitLoginQr } from '../../sockets';
+import type { IAttachFile } from '../../types';
 import { convertQrImgToBase64 } from '../../utils';
 
 /**
@@ -76,11 +83,24 @@ class WsTransporter extends Client implements LeadExternal {
    * @param lead
    * @returns
    */
-  async sendMsg(lead: { message: string; phone: string }): Promise<any> {
+  async sendMsg(lead: {
+    message: string;
+    phone: string;
+    attach: IAttachFile;
+  }): Promise<any> {
     try {
       if (!this.status) return Promise.resolve({ error: 'WAIT_LOGIN' });
-      const { message, phone } = lead;
-      const response = await this.sendMessage(`${phone}@c.us`, message);
+      const { message, phone, attach } = lead;
+      let response: Message;
+      if (attach.base64 && attach.type) {
+        const media = new MessageMedia(attach.type, attach.base64);
+        response = await this.sendMessage(`${phone}@c.us`, media, {
+          caption: message,
+        });
+      } else {
+        response = await this.sendMessage(`${phone}@c.us`, message);
+      }
+
       return { id: response.id.id };
     } catch (e: any) {
       return Promise.resolve({ error: e.message });
